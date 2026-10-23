@@ -1,6 +1,7 @@
 /* =========================================================
    UN PAS DE PLUS
    SCRIPT.JS
+   Version multi-compteurs
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,8 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
 ========================================================= */
 
 const STORAGE_KEYS = {
-  since: "unPasDePlus_since",
-  goal: "unPasDePlus_goal"
+  since: "unPasDePlus_since_items",
+  goals: "unPasDePlus_goal_items",
+
+  // Anciennes clés utilisées par la première version.
+  // Elles servent uniquement à récupérer les anciens compteurs
+  // si tu en avais déjà créé.
+  oldSince: "unPasDePlus_since",
+  oldGoal: "unPasDePlus_goal"
 };
 
 
@@ -28,65 +35,32 @@ const motivationAuthor =
   document.getElementById("motivationAuthor");
 
 
-// COMPTEUR DEPUIS
+// Liste DEPUIS
+const sinceList =
+  document.getElementById("sinceList");
+
 const sinceEmpty =
   document.getElementById("sinceEmpty");
-
-const sinceContent =
-  document.getElementById("sinceContent");
-
-const sinceName =
-  document.getElementById("sinceName");
-
-const sinceDays =
-  document.getElementById("sinceDays");
-
-const sinceUnit =
-  document.getElementById("sinceUnit");
-
-const sinceMessage =
-  document.getElementById("sinceMessage");
-
-const sinceDateDisplay =
-  document.getElementById("sinceDateDisplay");
 
 const addSinceBtn =
   document.getElementById("addSinceBtn");
 
-const editSinceBtn =
-  document.getElementById("editSinceBtn");
+const addSinceEmptyBtn =
+  document.getElementById("addSinceEmptyBtn");
 
 
-// OBJECTIF
+// Liste OBJECTIFS
+const goalList =
+  document.getElementById("goalList");
+
 const goalEmpty =
   document.getElementById("goalEmpty");
-
-const goalContent =
-  document.getElementById("goalContent");
-
-const goalName =
-  document.getElementById("goalName");
-
-const goalPrefix =
-  document.getElementById("goalPrefix");
-
-const goalDays =
-  document.getElementById("goalDays");
-
-const goalUnit =
-  document.getElementById("goalUnit");
-
-const goalMessage =
-  document.getElementById("goalMessage");
-
-const goalDateDisplay =
-  document.getElementById("goalDateDisplay");
 
 const addGoalBtn =
   document.getElementById("addGoalBtn");
 
-const editGoalBtn =
-  document.getElementById("editGoalBtn");
+const addGoalEmptyBtn =
+  document.getElementById("addGoalEmptyBtn");
 
 
 // MODALE DEPUIS
@@ -96,20 +70,26 @@ const sinceModal =
 const sinceForm =
   document.getElementById("sinceForm");
 
+const sinceModalTitle =
+  document.getElementById("sinceModalTitle");
+
+const sinceEditId =
+  document.getElementById("sinceEditId");
+
 const sinceInputName =
   document.getElementById("sinceInputName");
 
 const sinceInputDate =
   document.getElementById("sinceInputDate");
 
-const deleteSinceBtn =
-  document.getElementById("deleteSinceBtn");
+const restartSinceZone =
+  document.getElementById("restartSinceZone");
 
 const restartSinceBtn =
   document.getElementById("restartSinceBtn");
 
-const restartSinceZone =
-  document.getElementById("restartSinceZone");
+const deleteSinceBtn =
+  document.getElementById("deleteSinceBtn");
 
 
 // MODALE OBJECTIF
@@ -119,6 +99,12 @@ const goalModal =
 const goalForm =
   document.getElementById("goalForm");
 
+const goalModalTitle =
+  document.getElementById("goalModalTitle");
+
+const goalEditId =
+  document.getElementById("goalEditId");
+
 const goalInputName =
   document.getElementById("goalInputName");
 
@@ -127,7 +113,6 @@ const goalInputDate =
 
 const deleteGoalBtn =
   document.getElementById("deleteGoalBtn");
-
 
 
 /* =========================================================
@@ -292,7 +277,7 @@ const quotes = [
   },
 
   {
-    text: "Pense, crois, rêve et ose.",
+    text: "Pense, rêve, crois, ose… et fais-le.",
     author: ""
   },
 
@@ -724,7 +709,8 @@ function getTodayString() {
 
   const today = getToday();
 
-  const year = today.getFullYear();
+  const year =
+    today.getFullYear();
 
   const month =
     String(today.getMonth() + 1)
@@ -807,32 +793,42 @@ function formatDate(date) {
 }
 
 
+/* =========================================================
+   CRÉATION D'IDENTIFIANT
+========================================================= */
+
+function createId() {
+
+  return (
+    Date.now().toString(36) +
+    Math.random()
+      .toString(36)
+      .slice(2, 8)
+  );
+}
+
 
 /* =========================================================
    LOCALSTORAGE
 ========================================================= */
 
-function saveData(key, data) {
-
-  localStorage.setItem(
-    key,
-    JSON.stringify(data)
-  );
-}
-
-
-function loadData(key) {
+function loadArray(key) {
 
   const saved =
     localStorage.getItem(key);
 
   if (!saved) {
-    return null;
+    return [];
   }
 
   try {
 
-    return JSON.parse(saved);
+    const data =
+      JSON.parse(saved);
+
+    return Array.isArray(data)
+      ? data
+      : [];
 
   } catch (error) {
 
@@ -841,16 +837,128 @@ function loadData(key) {
       error
     );
 
-    return null;
+    return [];
   }
 }
 
 
-function deleteData(key) {
+function saveArray(key, data) {
 
-  localStorage.removeItem(key);
+  localStorage.setItem(
+    key,
+    JSON.stringify(data)
+  );
 }
 
+
+/* =========================================================
+   MIGRATION DE L'ANCIENNE VERSION
+========================================================= */
+
+function migrateOldData() {
+
+  const currentSince =
+    loadArray(STORAGE_KEYS.since);
+
+  const currentGoals =
+    loadArray(STORAGE_KEYS.goals);
+
+
+  /*
+    Ancien compteur "Depuis"
+  */
+
+  if (currentSince.length === 0) {
+
+    const oldSinceRaw =
+      localStorage.getItem(
+        STORAGE_KEYS.oldSince
+      );
+
+    if (oldSinceRaw) {
+
+      try {
+
+        const oldSince =
+          JSON.parse(oldSinceRaw);
+
+        if (
+          oldSince &&
+          oldSince.name &&
+          oldSince.date
+        ) {
+
+          saveArray(
+            STORAGE_KEYS.since,
+            [
+              {
+                id: createId(),
+                name: oldSince.name,
+                date: oldSince.date,
+                createdAt: Date.now()
+              }
+            ]
+          );
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Impossible de récupérer l’ancien compteur Depuis.",
+          error
+        );
+      }
+    }
+  }
+
+
+  /*
+    Ancien objectif
+  */
+
+  if (currentGoals.length === 0) {
+
+    const oldGoalRaw =
+      localStorage.getItem(
+        STORAGE_KEYS.oldGoal
+      );
+
+    if (oldGoalRaw) {
+
+      try {
+
+        const oldGoal =
+          JSON.parse(oldGoalRaw);
+
+        if (
+          oldGoal &&
+          oldGoal.name &&
+          oldGoal.date
+        ) {
+
+          saveArray(
+            STORAGE_KEYS.goals,
+            [
+              {
+                id: createId(),
+                name: oldGoal.name,
+                date: oldGoal.date,
+                createdAt: Date.now()
+              }
+            ]
+          );
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Impossible de récupérer l’ancien objectif.",
+          error
+        );
+      }
+    }
+  }
+}
 
 
 /* =========================================================
@@ -880,8 +988,10 @@ function getDailyQuoteIndex() {
     hash |= 0;
   }
 
-  return Math.abs(hash) %
-    quotes.length;
+  return (
+    Math.abs(hash) %
+    quotes.length
+  );
 }
 
 
@@ -896,6 +1006,7 @@ function displayDailyQuote() {
 
   const quote =
     quotes[getDailyQuoteIndex()];
+
 
   motivationQuote.textContent =
     `“${quote.text}”`;
@@ -923,45 +1034,52 @@ function displayDailyQuote() {
 }
 
 
-
 /* =========================================================
-   AFFICHAGE — COMPTEUR DEPUIS
+   CRÉATION ÉLÉMENT
 ========================================================= */
 
-function renderSince() {
+function createElement(
+  tag,
+  className,
+  text
+) {
 
-  const data =
-    loadData(STORAGE_KEYS.since);
+  const element =
+    document.createElement(tag);
 
-
-  if (
-    !data ||
-    !data.name ||
-    !data.date
-  ) {
-
-    sinceEmpty?.classList.remove(
-      "hidden"
-    );
-
-    sinceContent?.classList.add(
-      "hidden"
-    );
-
-    return;
+  if (className) {
+    element.className =
+      className;
   }
 
+  if (
+    text !== undefined &&
+    text !== null
+  ) {
+
+    element.textContent =
+      text;
+  }
+
+  return element;
+}
+
+
+/* =========================================================
+   CARTE — DEPUIS
+========================================================= */
+
+function createSinceCard(item) {
 
   const startDate =
-    parseLocalDate(data.date);
+    parseLocalDate(item.date);
+
+  if (!startDate) {
+    return null;
+  }
 
   const today =
     getToday();
-
-  if (!startDate) {
-    return;
-  }
-
 
   const days =
     differenceInDays(
@@ -970,81 +1088,234 @@ function renderSince() {
     );
 
 
-  sinceEmpty?.classList.add(
-    "hidden"
+  const card =
+    createElement(
+      "article",
+      "counter-card counter-card-since"
+    );
+
+
+  /*
+    Haut de carte
+  */
+
+  const top =
+    createElement(
+      "div",
+      "counter-top"
+    );
+
+  const type =
+    createElement(
+      "div",
+      "counter-type"
+    );
+
+  const icon =
+    createElement(
+      "span",
+      "counter-icon",
+      "↑"
+    );
+
+  const info =
+    createElement(
+      "div",
+      ""
+    );
+
+  const label =
+    createElement(
+      "span",
+      "counter-label",
+      "DEPUIS"
+    );
+
+  const subtitle =
+    createElement(
+      "p",
+      "",
+      "Le chemin déjà parcouru"
+    );
+
+
+  info.appendChild(label);
+  info.appendChild(subtitle);
+
+  type.appendChild(icon);
+  type.appendChild(info);
+
+
+  const editButton =
+    createElement(
+      "button",
+      "edit-button",
+      "✎"
+    );
+
+  editButton.type =
+    "button";
+
+  editButton.setAttribute(
+    "aria-label",
+    `Modifier ${item.name}`
   );
 
-  sinceContent?.classList.remove(
-    "hidden"
+  editButton.addEventListener(
+    "click",
+    () => {
+      openSinceModal(item.id);
+    }
   );
 
 
-  sinceName.textContent =
-    data.name;
+  top.appendChild(type);
+  top.appendChild(editButton);
+
+  card.appendChild(top);
+
+
+  /*
+    Nom
+  */
+
+  const name =
+    createElement(
+      "p",
+      "counter-name",
+      item.name
+    );
+
+  card.appendChild(name);
+
+
+  /*
+    Nombre de jours
+  */
+
+  const numberWrap =
+    createElement(
+      "div",
+      "counter-number-wrap"
+    );
+
+  const number =
+    createElement(
+      "span",
+      "counter-number"
+    );
+
+  const unit =
+    createElement(
+      "span",
+      "counter-unit"
+    );
 
 
   if (days === 0) {
 
-    sinceDays.textContent =
+    number.textContent =
       "Aujourd’hui";
 
-    sinceUnit.textContent =
+    unit.textContent =
       "";
 
-    sinceMessage.textContent =
+  } else if (days === 1) {
+
+    number.textContent =
+      "1";
+
+    unit.textContent =
+      "jour";
+
+  } else {
+
+    number.textContent =
+      String(days);
+
+    unit.textContent =
+      "jours";
+  }
+
+
+  numberWrap.appendChild(number);
+  numberWrap.appendChild(unit);
+
+  card.appendChild(numberWrap);
+
+
+  /*
+    Message
+  */
+
+  let messageText = "";
+
+  if (days === 0) {
+
+    messageText =
       "un nouveau départ commence";
 
   } else if (days === 1) {
 
-    sinceDays.textContent =
-      "1";
-
-    sinceUnit.textContent =
-      "jour";
-
-    sinceMessage.textContent =
+    messageText =
       "depuis que tu as commencé";
 
   } else {
 
-    sinceDays.textContent =
-      days;
-
-    sinceUnit.textContent =
-      "jours";
-
-    sinceMessage.textContent =
+    messageText =
       "depuis que tu as commencé";
   }
 
 
-  sinceDateDisplay.textContent =
-    `Début : ${formatDate(startDate)}`;
+  const message =
+    createElement(
+      "p",
+      "counter-message",
+      messageText
+    );
+
+  card.appendChild(message);
+
+
+  /*
+    Date
+  */
+
+  const date =
+    createElement(
+      "p",
+      "counter-date",
+      `Début : ${formatDate(startDate)}`
+    );
+
+  card.appendChild(date);
+
+
+  return card;
 }
 
 
-
 /* =========================================================
-   AFFICHAGE — OBJECTIF
+   AFFICHAGE LISTE — DEPUIS
 ========================================================= */
 
-function renderGoal() {
+function renderSinceList() {
 
-  const data =
-    loadData(STORAGE_KEYS.goal);
+  if (!sinceList) {
+    return;
+  }
 
 
-  if (
-    !data ||
-    !data.name ||
-    !data.date
-  ) {
+  const items =
+    loadArray(STORAGE_KEYS.since);
 
-    goalEmpty?.classList.remove(
-      "hidden"
-    );
 
-    goalContent?.classList.add(
+  sinceList.innerHTML = "";
+
+
+  if (items.length === 0) {
+
+    sinceEmpty?.classList.remove(
       "hidden"
     );
 
@@ -1052,16 +1323,53 @@ function renderGoal() {
   }
 
 
+  sinceEmpty?.classList.add(
+    "hidden"
+  );
+
+
+  /*
+    On affiche les plus anciennes dates
+    en premier, donc les compteurs
+    avec le plus de jours en haut.
+  */
+
+  const sortedItems =
+    [...items].sort(
+      (a, b) =>
+        a.date.localeCompare(b.date)
+    );
+
+
+  sortedItems.forEach((item) => {
+
+    const card =
+      createSinceCard(item);
+
+    if (card) {
+
+      sinceList.appendChild(card);
+    }
+  });
+}
+
+
+/* =========================================================
+   CARTE — OBJECTIF
+========================================================= */
+
+function createGoalCard(item) {
+
   const targetDate =
-    parseLocalDate(data.date);
+    parseLocalDate(item.date);
+
+  if (!targetDate) {
+    return null;
+  }
+
 
   const today =
     getToday();
-
-  if (!targetDate) {
-    return;
-  }
-
 
   const days =
     differenceInDays(
@@ -1070,133 +1378,386 @@ function renderGoal() {
     );
 
 
-  goalEmpty?.classList.add(
-    "hidden"
+  const card =
+    createElement(
+      "article",
+      "counter-card counter-card-goal"
+    );
+
+
+  /*
+    Haut
+  */
+
+  const top =
+    createElement(
+      "div",
+      "counter-top"
+    );
+
+  const type =
+    createElement(
+      "div",
+      "counter-type"
+    );
+
+  const icon =
+    createElement(
+      "span",
+      "counter-icon",
+      "◎"
+    );
+
+  const info =
+    createElement(
+      "div",
+      ""
+    );
+
+  const label =
+    createElement(
+      "span",
+      "counter-label",
+      "À VENIR"
+    );
+
+  const subtitle =
+    createElement(
+      "p",
+      "",
+      "Ton prochain défi"
+    );
+
+
+  info.appendChild(label);
+  info.appendChild(subtitle);
+
+  type.appendChild(icon);
+  type.appendChild(info);
+
+
+  const editButton =
+    createElement(
+      "button",
+      "edit-button",
+      "✎"
+    );
+
+  editButton.type =
+    "button";
+
+  editButton.setAttribute(
+    "aria-label",
+    `Modifier ${item.name}`
   );
 
-  goalContent?.classList.remove(
-    "hidden"
+  editButton.addEventListener(
+    "click",
+    () => {
+      openGoalModal(item.id);
+    }
   );
 
 
-  goalName.textContent =
-    data.name;
+  top.appendChild(type);
+  top.appendChild(editButton);
+
+  card.appendChild(top);
+
+
+  /*
+    Nom
+  */
+
+  const name =
+    createElement(
+      "p",
+      "counter-name",
+      item.name
+    );
+
+  card.appendChild(name);
+
+
+  /*
+    Préfixe
+  */
+
+  const prefix =
+    createElement(
+      "p",
+      "goal-prefix"
+    );
+
+
+  /*
+    Nombre
+  */
+
+  const numberWrap =
+    createElement(
+      "div",
+      "counter-number-wrap"
+    );
+
+  const number =
+    createElement(
+      "span",
+      "counter-number"
+    );
+
+  const unit =
+    createElement(
+      "span",
+      "counter-unit"
+    );
+
+
+  /*
+    Message
+  */
+
+  const message =
+    createElement(
+      "p",
+      "counter-message"
+    );
 
 
   if (days > 1) {
 
-    goalPrefix.textContent =
+    prefix.textContent =
       "Dans";
 
-    goalDays.textContent =
-      days;
+    number.textContent =
+      String(days);
 
-    goalUnit.textContent =
+    unit.textContent =
       "jours";
 
-    goalMessage.textContent =
+    message.textContent =
       "avant ton objectif";
 
   } else if (days === 1) {
 
-    goalPrefix.textContent =
+    prefix.textContent =
       "";
 
-    goalDays.textContent =
+    number.textContent =
       "Demain";
 
-    goalUnit.textContent =
+    unit.textContent =
       "";
 
-    goalMessage.textContent =
+    message.textContent =
       "c’est presque le moment";
 
   } else if (days === 0) {
 
-    goalPrefix.textContent =
+    prefix.textContent =
       "";
 
-    goalDays.textContent =
+    number.textContent =
       "Aujourd’hui";
 
-    goalUnit.textContent =
+    unit.textContent =
       "";
 
-    goalMessage.textContent =
+    message.textContent =
       "C’est le jour J. Fais-le.";
+
+    card.classList.add(
+      "goal-today"
+    );
 
   } else {
 
     const elapsed =
       Math.abs(days);
 
-    goalPrefix.textContent =
-      "";
+    prefix.textContent =
+      "Terminé depuis";
 
-    goalDays.textContent =
-      elapsed;
+    number.textContent =
+      String(elapsed);
 
-    goalUnit.textContent =
+    unit.textContent =
       elapsed === 1
         ? "jour"
         : "jours";
 
-    goalMessage.textContent =
-      elapsed === 1
-        ? "depuis cet objectif"
-        : "depuis cet objectif";
+    message.textContent =
+      "Cet objectif est passé.";
+
+    card.classList.add(
+      "goal-past"
+    );
   }
 
 
-  goalDateDisplay.textContent =
-    `Date : ${formatDate(targetDate)}`;
+  card.appendChild(prefix);
+
+  numberWrap.appendChild(number);
+  numberWrap.appendChild(unit);
+
+  card.appendChild(numberWrap);
+  card.appendChild(message);
+
+
+  /*
+    Date
+  */
+
+  const date =
+    createElement(
+      "p",
+      "counter-date",
+      `Date : ${formatDate(targetDate)}`
+    );
+
+  card.appendChild(date);
+
+
+  return card;
 }
 
 
-
 /* =========================================================
-   OUVERTURE MODALE DEPUIS
+   AFFICHAGE LISTE — OBJECTIFS
 ========================================================= */
 
-function openSinceModal() {
+function renderGoalList() {
 
-  const data =
-    loadData(STORAGE_KEYS.since);
+  if (!goalList) {
+    return;
+  }
 
 
-  if (data) {
+  const items =
+    loadArray(STORAGE_KEYS.goals);
 
-    sinceInputName.value =
-      data.name || "";
 
-    sinceInputDate.value =
-      data.date || "";
+  goalList.innerHTML = "";
 
-    deleteSinceBtn.style.display =
-      "inline-flex";
 
-    if (restartSinceZone) {
+  if (items.length === 0) {
 
-      restartSinceZone.style.display =
-        "block";
+    goalEmpty?.classList.remove(
+      "hidden"
+    );
+
+    return;
+  }
+
+
+  goalEmpty?.classList.add(
+    "hidden"
+  );
+
+
+  /*
+    Objectifs les plus proches
+    affichés en premier.
+  */
+
+  const sortedItems =
+    [...items].sort(
+      (a, b) =>
+        a.date.localeCompare(b.date)
+    );
+
+
+  sortedItems.forEach((item) => {
+
+    const card =
+      createGoalCard(item);
+
+    if (card) {
+
+      goalList.appendChild(card);
+    }
+  });
+}
+
+
+/* =========================================================
+   OUVERTURE MODALE — DEPUIS
+========================================================= */
+
+function openSinceModal(id = null) {
+
+  const items =
+    loadArray(STORAGE_KEYS.since);
+
+
+  /*
+    MODE MODIFICATION
+  */
+
+  if (id) {
+
+    const item =
+      items.find(
+        element =>
+          element.id === id
+      );
+
+
+    if (!item) {
+      return;
     }
 
-  } else {
+
+    sinceEditId.value =
+      item.id;
+
+    sinceInputName.value =
+      item.name;
+
+    sinceInputDate.value =
+      item.date;
+
+    sinceModalTitle.textContent =
+      "Modifier ce départ";
+
+
+    restartSinceZone?.classList.remove(
+      "hidden"
+    );
+
+    deleteSinceBtn?.classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  /*
+    MODE AJOUT
+  */
+
+  else {
+
+    sinceEditId.value =
+      "";
 
     sinceInputName.value =
       "";
 
     sinceInputDate.value =
-      "";
+      getTodayString();
 
-    deleteSinceBtn.style.display =
-      "none";
+    sinceModalTitle.textContent =
+      "Ajouter un départ";
 
-    if (restartSinceZone) {
 
-      restartSinceZone.style.display =
-        "none";
-    }
+    restartSinceZone?.classList.add(
+      "hidden"
+    );
+
+    deleteSinceBtn?.classList.add(
+      "hidden"
+    );
   }
 
 
@@ -1222,29 +1783,300 @@ function openSinceModal() {
 }
 
 
-
 /* =========================================================
-   OUVERTURE MODALE OBJECTIF
+   FERMETURE MODALE — DEPUIS
 ========================================================= */
 
-function openGoalModal() {
+function closeSinceModal() {
 
-  const data =
-    loadData(STORAGE_KEYS.goal);
+  sinceModal.classList.add(
+    "hidden"
+  );
+
+  sinceModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+}
 
 
-  if (data) {
+/* =========================================================
+   ENREGISTREMENT — DEPUIS
+========================================================= */
+
+sinceForm?.addEventListener(
+  "submit",
+  event => {
+
+    event.preventDefault();
+
+
+    const name =
+      sinceInputName.value.trim();
+
+    const date =
+      sinceInputDate.value;
+
+    const editingId =
+      sinceEditId.value;
+
+
+    if (
+      !name ||
+      !date
+    ) {
+      return;
+    }
+
+
+    let items =
+      loadArray(STORAGE_KEYS.since);
+
+
+    /*
+      Modification
+    */
+
+    if (editingId) {
+
+      items =
+        items.map(item => {
+
+          if (
+            item.id === editingId
+          ) {
+
+            return {
+              ...item,
+              name,
+              date
+            };
+          }
+
+          return item;
+        });
+
+    }
+
+
+    /*
+      Nouveau compteur
+    */
+
+    else {
+
+      items.push({
+
+        id:
+          createId(),
+
+        name,
+
+        date,
+
+        createdAt:
+          Date.now()
+
+      });
+    }
+
+
+    saveArray(
+      STORAGE_KEYS.since,
+      items
+    );
+
+
+    closeSinceModal();
+
+    renderSinceList();
+  }
+);
+
+
+/* =========================================================
+   RECOMMENCER AUJOURD'HUI
+========================================================= */
+
+restartSinceBtn?.addEventListener(
+  "click",
+  () => {
+
+    const id =
+      sinceEditId.value;
+
+
+    if (!id) {
+      return;
+    }
+
+
+    const confirmed =
+      window.confirm(
+        "Recommencer ce compteur à partir d’aujourd’hui ?\n\nLe compteur repartira de zéro, mais les autres compteurs ne seront pas modifiés."
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    let items =
+      loadArray(STORAGE_KEYS.since);
+
+
+    items =
+      items.map(item => {
+
+        if (item.id === id) {
+
+          return {
+            ...item,
+            date: getTodayString()
+          };
+        }
+
+        return item;
+      });
+
+
+    saveArray(
+      STORAGE_KEYS.since,
+      items
+    );
+
+
+    closeSinceModal();
+
+    renderSinceList();
+  }
+);
+
+
+/* =========================================================
+   SUPPRESSION — DEPUIS
+========================================================= */
+
+deleteSinceBtn?.addEventListener(
+  "click",
+  () => {
+
+    const id =
+      sinceEditId.value;
+
+
+    if (!id) {
+      return;
+    }
+
+
+    const items =
+      loadArray(STORAGE_KEYS.since);
+
+    const item =
+      items.find(
+        element =>
+          element.id === id
+      );
+
+
+    if (!item) {
+      return;
+    }
+
+
+    const confirmed =
+      window.confirm(
+        `Supprimer définitivement « ${item.name} » ?`
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const newItems =
+      items.filter(
+        element =>
+          element.id !== id
+      );
+
+
+    saveArray(
+      STORAGE_KEYS.since,
+      newItems
+    );
+
+
+    closeSinceModal();
+
+    renderSinceList();
+  }
+);
+
+
+/* =========================================================
+   OUVERTURE MODALE — OBJECTIF
+========================================================= */
+
+function openGoalModal(id = null) {
+
+  const items =
+    loadArray(STORAGE_KEYS.goals);
+
+
+  /*
+    MODE MODIFICATION
+  */
+
+  if (id) {
+
+    const item =
+      items.find(
+        element =>
+          element.id === id
+      );
+
+
+    if (!item) {
+      return;
+    }
+
+
+    goalEditId.value =
+      item.id;
 
     goalInputName.value =
-      data.name || "";
+      item.name;
 
     goalInputDate.value =
-      data.date || "";
+      item.date;
 
-    deleteGoalBtn.style.display =
-      "inline-flex";
+    goalModalTitle.textContent =
+      "Modifier cet objectif";
 
-  } else {
+
+    deleteGoalBtn?.classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  /*
+    MODE AJOUT
+  */
+
+  else {
+
+    goalEditId.value =
+      "";
 
     goalInputName.value =
       "";
@@ -1252,8 +2084,13 @@ function openGoalModal() {
     goalInputDate.value =
       "";
 
-    deleteGoalBtn.style.display =
-      "none";
+    goalModalTitle.textContent =
+      "Ajouter un objectif";
+
+
+    deleteGoalBtn?.classList.add(
+      "hidden"
+    );
   }
 
 
@@ -1279,27 +2116,9 @@ function openGoalModal() {
 }
 
 
-
 /* =========================================================
-   FERMETURE MODALES
+   FERMETURE MODALE — OBJECTIF
 ========================================================= */
-
-function closeSinceModal() {
-
-  sinceModal.classList.add(
-    "hidden"
-  );
-
-  sinceModal.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  document.body.classList.remove(
-    "modal-open"
-  );
-}
-
 
 function closeGoalModal() {
 
@@ -1318,57 +2137,13 @@ function closeGoalModal() {
 }
 
 
-
 /* =========================================================
-   ENREGISTREMENT DEPUIS
-========================================================= */
-
-sinceForm?.addEventListener(
-  "submit",
-  (event) => {
-
-    event.preventDefault();
-
-
-    const name =
-      sinceInputName.value.trim();
-
-    const date =
-      sinceInputDate.value;
-
-
-    if (
-      !name ||
-      !date
-    ) {
-      return;
-    }
-
-
-    saveData(
-      STORAGE_KEYS.since,
-      {
-        name,
-        date
-      }
-    );
-
-
-    closeSinceModal();
-
-    renderSince();
-  }
-);
-
-
-
-/* =========================================================
-   ENREGISTREMENT OBJECTIF
+   ENREGISTREMENT — OBJECTIF
 ========================================================= */
 
 goalForm?.addEventListener(
   "submit",
-  (event) => {
+  event => {
 
     event.preventDefault();
 
@@ -1379,6 +2154,9 @@ goalForm?.addEventListener(
     const date =
       goalInputDate.value;
 
+    const editingId =
+      goalEditId.value;
+
 
     if (
       !name ||
@@ -1388,110 +2166,69 @@ goalForm?.addEventListener(
     }
 
 
-    saveData(
-      STORAGE_KEYS.goal,
-      {
+    let items =
+      loadArray(STORAGE_KEYS.goals);
+
+
+    /*
+      Modification
+    */
+
+    if (editingId) {
+
+      items =
+        items.map(item => {
+
+          if (
+            item.id === editingId
+          ) {
+
+            return {
+              ...item,
+              name,
+              date
+            };
+          }
+
+          return item;
+        });
+
+    }
+
+
+    /*
+      Nouvel objectif
+    */
+
+    else {
+
+      items.push({
+
+        id:
+          createId(),
+
         name,
-        date
-      }
+
+        date,
+
+        createdAt:
+          Date.now()
+
+      });
+    }
+
+
+    saveArray(
+      STORAGE_KEYS.goals,
+      items
     );
 
 
     closeGoalModal();
 
-    renderGoal();
+    renderGoalList();
   }
 );
-
-
-
-/* =========================================================
-   RECOMMENCER AUJOURD'HUI
-========================================================= */
-
-restartSinceBtn?.addEventListener(
-  "click",
-  () => {
-
-    const currentData =
-      loadData(STORAGE_KEYS.since);
-
-
-    if (!currentData) {
-      return;
-    }
-
-
-    const confirmed =
-      window.confirm(
-        "Recommencer ce compteur à partir d’aujourd’hui ?"
-      );
-
-
-    if (!confirmed) {
-      return;
-    }
-
-
-    const newData = {
-
-      name:
-        currentData.name,
-
-      date:
-        getTodayString()
-
-    };
-
-
-    saveData(
-      STORAGE_KEYS.since,
-      newData
-    );
-
-
-    sinceInputDate.value =
-      newData.date;
-
-
-    closeSinceModal();
-
-    renderSince();
-  }
-);
-
-
-
-/* =========================================================
-   SUPPRESSION — DEPUIS
-========================================================= */
-
-deleteSinceBtn?.addEventListener(
-  "click",
-  () => {
-
-    const confirmed =
-      window.confirm(
-        "Supprimer complètement ce compteur ?"
-      );
-
-
-    if (!confirmed) {
-      return;
-    }
-
-
-    deleteData(
-      STORAGE_KEYS.since
-    );
-
-
-    closeSinceModal();
-
-    renderSince();
-  }
-);
-
 
 
 /* =========================================================
@@ -1502,9 +2239,33 @@ deleteGoalBtn?.addEventListener(
   "click",
   () => {
 
+    const id =
+      goalEditId.value;
+
+
+    if (!id) {
+      return;
+    }
+
+
+    const items =
+      loadArray(STORAGE_KEYS.goals);
+
+    const item =
+      items.find(
+        element =>
+          element.id === id
+      );
+
+
+    if (!item) {
+      return;
+    }
+
+
     const confirmed =
       window.confirm(
-        "Supprimer complètement cet objectif ?"
+        `Supprimer définitivement « ${item.name} » ?`
       );
 
 
@@ -1513,73 +2274,96 @@ deleteGoalBtn?.addEventListener(
     }
 
 
-    deleteData(
-      STORAGE_KEYS.goal
+    const newItems =
+      items.filter(
+        element =>
+          element.id !== id
+      );
+
+
+    saveArray(
+      STORAGE_KEYS.goals,
+      newItems
     );
 
 
     closeGoalModal();
 
-    renderGoal();
+    renderGoalList();
   }
 );
 
 
-
 /* =========================================================
-   BOUTONS OUVERTURE
+   BOUTONS AJOUT — DEPUIS
 ========================================================= */
 
 addSinceBtn?.addEventListener(
   "click",
-  openSinceModal
+  () => {
+    openSinceModal();
+  }
 );
 
-editSinceBtn?.addEventListener(
+
+addSinceEmptyBtn?.addEventListener(
   "click",
-  openSinceModal
+  () => {
+    openSinceModal();
+  }
 );
-
-
-addGoalBtn?.addEventListener(
-  "click",
-  openGoalModal
-);
-
-editGoalBtn?.addEventListener(
-  "click",
-  openGoalModal
-);
-
 
 
 /* =========================================================
-   FERMETURE PAR BOUTONS / OVERLAY
+   BOUTONS AJOUT — OBJECTIFS
 ========================================================= */
 
-document.querySelectorAll(
-  '[data-close-modal="since"]'
-).forEach((element) => {
-
-  element.addEventListener(
-    "click",
-    closeSinceModal
-  );
-
-});
+addGoalBtn?.addEventListener(
+  "click",
+  () => {
+    openGoalModal();
+  }
+);
 
 
-document.querySelectorAll(
-  '[data-close-modal="goal"]'
-).forEach((element) => {
+addGoalEmptyBtn?.addEventListener(
+  "click",
+  () => {
+    openGoalModal();
+  }
+);
 
-  element.addEventListener(
-    "click",
-    closeGoalModal
-  );
 
-});
+/* =========================================================
+   FERMETURE DES MODALES
+========================================================= */
 
+document
+  .querySelectorAll(
+    '[data-close-modal="since"]'
+  )
+  .forEach(element => {
+
+    element.addEventListener(
+      "click",
+      closeSinceModal
+    );
+
+  });
+
+
+document
+  .querySelectorAll(
+    '[data-close-modal="goal"]'
+  )
+  .forEach(element => {
+
+    element.addEventListener(
+      "click",
+      closeGoalModal
+    );
+
+  });
 
 
 /* =========================================================
@@ -1588,14 +2372,17 @@ document.querySelectorAll(
 
 document.addEventListener(
   "keydown",
-  (event) => {
+  event => {
 
-    if (event.key !== "Escape") {
+    if (
+      event.key !== "Escape"
+    ) {
       return;
     }
 
 
     if (
+      sinceModal &&
       !sinceModal.classList.contains(
         "hidden"
       )
@@ -1606,6 +2393,7 @@ document.addEventListener(
 
 
     if (
+      goalModal &&
       !goalModal.classList.contains(
         "hidden"
       )
@@ -1617,61 +2405,57 @@ document.addEventListener(
 );
 
 
-
 /* =========================================================
    LIMITES DES DATES
 ========================================================= */
 
 function setDateLimits() {
 
-  const todayString =
+  const today =
     getTodayString();
 
 
   /*
-    Le compteur "Depuis"
-    accepte aujourd’hui
-    et toutes les dates passées.
+    "Depuis" :
+    aujourd’hui ou une date passée.
   */
 
   if (sinceInputDate) {
 
     sinceInputDate.max =
-      todayString;
+      today;
   }
 
 
   /*
-    L'objectif accepte aujourd’hui
-    et toutes les dates futures.
+    "À venir" :
+    aujourd’hui ou une date future.
   */
 
   if (goalInputDate) {
 
     goalInputDate.min =
-      todayString;
+      today;
   }
 }
 
 
-
 /* =========================================================
-   ACTUALISATION GÉNÉRALE
+   ACTUALISATION
 ========================================================= */
 
 function refreshAll() {
 
   displayDailyQuote();
 
-  renderSince();
+  renderSinceList();
 
-  renderGoal();
+  renderGoalList();
 }
 
 
-
 /* =========================================================
-   CHANGEMENT AUTOMATIQUE DE JOUR
+   CHANGEMENT DE JOUR
 ========================================================= */
 
 let lastKnownDate =
@@ -1700,7 +2484,6 @@ setInterval(() => {
 }, 60000);
 
 
-
 /* =========================================================
    RETOUR SUR L'APPLICATION
 ========================================================= */
@@ -1722,10 +2505,11 @@ document.addEventListener(
 );
 
 
-
 /* =========================================================
    INITIALISATION
 ========================================================= */
+
+migrateOldData();
 
 setDateLimits();
 
