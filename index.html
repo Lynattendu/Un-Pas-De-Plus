@@ -84,10 +84,10 @@
 
 
     <!-- =====================================================
-         COMPTEURS
+         SECTION DEPUIS
     ====================================================== -->
 
-    <section class="counters-section">
+    <section class="counter-section">
 
       <div class="section-heading">
 
@@ -98,271 +98,153 @@
           </p>
 
           <h2>
-            Mes compteurs
+            Depuis
           </h2>
 
+          <p class="section-description">
+            Tout ce que tu as commencé et que tu veux continuer à suivre.
+          </p>
+
         </div>
+
+        <button
+          class="add-main-button"
+          id="addSinceBtn"
+          type="button"
+        >
+          + Ajouter
+        </button>
 
       </div>
 
 
       <!-- =================================================
-           COMPTEUR 1 — DEPUIS
+           LISTE DES COMPTEURS DEPUIS
       ================================================== -->
 
-      <article
-        class="counter-card counter-card-since"
-        id="sinceCard"
+      <div
+        class="counter-list"
+        id="sinceList"
       >
-
-        <div class="counter-top">
-
-          <div class="counter-type">
-
-            <span class="counter-icon">
-              ↑
-            </span>
-
-            <div>
-
-              <span class="counter-label">
-                DEPUIS
-              </span>
-
-              <p>
-                Le chemin déjà parcouru
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <button
-            class="edit-button"
-            id="editSinceBtn"
-            type="button"
-            aria-label="Modifier le compteur depuis"
-          >
-            ✎
-          </button>
-
-        </div>
-
-
-        <!-- ÉTAT VIDE -->
-
-        <div
-          class="counter-empty"
-          id="sinceEmpty"
-        >
-
-          <div class="empty-symbol">
-            +
-          </div>
-
-          <h3>
-            Commence quelque chose
-          </h3>
-
-          <p>
-            Course à pied, nouveau projet, nouvelle habitude…
-          </p>
-
-          <button
-            class="primary-button"
-            id="addSinceBtn"
-            type="button"
-          >
-            Créer mon départ
-          </button>
-
-        </div>
-
-
-        <!-- ÉTAT AVEC COMPTEUR -->
-
-        <div
-          class="counter-content hidden"
-          id="sinceContent"
-        >
-
-          <p
-            class="counter-name"
-            id="sinceName"
-          >
-            Course à pied
-          </p>
-
-          <div class="counter-number-wrap">
-
-            <span
-              class="counter-number"
-              id="sinceDays"
-            >
-              0
-            </span>
-
-            <span
-              class="counter-unit"
-              id="sinceUnit"
-            >
-              jours
-            </span>
-
-          </div>
-
-          <p
-            class="counter-message"
-            id="sinceMessage"
-          >
-            depuis que tu as commencé
-          </p>
-
-          <p
-            class="counter-date"
-            id="sinceDateDisplay"
-          ></p>
-
-        </div>
-
-      </article>
+      </div>
 
 
       <!-- =================================================
-           COMPTEUR 2 — À VENIR
+           ÉTAT VIDE
       ================================================== -->
 
-      <article
-        class="counter-card counter-card-goal"
-        id="goalCard"
+      <div
+        class="empty-section"
+        id="sinceEmpty"
       >
 
-        <div class="counter-top">
-
-          <div class="counter-type">
-
-            <span class="counter-icon">
-              ◎
-            </span>
-
-            <div>
-
-              <span class="counter-label">
-                À VENIR
-              </span>
-
-              <p>
-                Ton prochain défi
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <button
-            class="edit-button"
-            id="editGoalBtn"
-            type="button"
-            aria-label="Modifier le prochain objectif"
-          >
-            ✎
-          </button>
-
+        <div class="empty-symbol">
+          +
         </div>
 
+        <h3>
+          Commence quelque chose
+        </h3>
 
-        <!-- ÉTAT VIDE -->
+        <p>
+          Course à pied, nouvelle habitude, projet personnel, défi…
+        </p>
 
-        <div
-          class="counter-empty"
-          id="goalEmpty"
+        <button
+          class="primary-button"
+          id="addSinceEmptyBtn"
+          type="button"
         >
+          Créer mon premier départ
+        </button>
 
-          <div class="empty-symbol">
-            +
-          </div>
-
-          <h3>
-            Fixe ton prochain objectif
-          </h3>
-
-          <p>
-            Trail, course, voyage, projet ou défi personnel…
-          </p>
-
-          <button
-            class="primary-button"
-            id="addGoalBtn"
-            type="button"
-          >
-            Ajouter un objectif
-          </button>
-
-        </div>
-
-
-        <!-- ÉTAT AVEC OBJECTIF -->
-
-        <div
-          class="counter-content hidden"
-          id="goalContent"
-        >
-
-          <p
-            class="counter-name"
-            id="goalName"
-          >
-            Mon prochain défi
-          </p>
-
-          <p
-            class="goal-prefix"
-            id="goalPrefix"
-          >
-            Dans
-          </p>
-
-          <div class="counter-number-wrap">
-
-            <span
-              class="counter-number"
-              id="goalDays"
-            >
-              0
-            </span>
-
-            <span
-              class="counter-unit"
-              id="goalUnit"
-            >
-              jours
-            </span>
-
-          </div>
-
-          <p
-            class="counter-message"
-            id="goalMessage"
-          >
-            avant ton objectif
-          </p>
-
-          <p
-            class="counter-date"
-            id="goalDateDisplay"
-          ></p>
-
-        </div>
-
-      </article>
+      </div>
 
     </section>
 
 
     <!-- =====================================================
-         BAS DE PAGE
+         SECTION À VENIR
+    ====================================================== -->
+
+    <section class="counter-section">
+
+      <div class="section-heading">
+
+        <div>
+
+          <p class="section-kicker">
+            Mes prochains pas
+          </p>
+
+          <h2>
+            À venir
+          </h2>
+
+          <p class="section-description">
+            Les défis, événements et objectifs qui t’attendent.
+          </p>
+
+        </div>
+
+        <button
+          class="add-main-button"
+          id="addGoalBtn"
+          type="button"
+        >
+          + Ajouter
+        </button>
+
+      </div>
+
+
+      <!-- =================================================
+           LISTE DES OBJECTIFS
+      ================================================== -->
+
+      <div
+        class="counter-list"
+        id="goalList"
+      >
+      </div>
+
+
+      <!-- =================================================
+           ÉTAT VIDE
+      ================================================== -->
+
+      <div
+        class="empty-section"
+        id="goalEmpty"
+      >
+
+        <div class="empty-symbol">
+          +
+        </div>
+
+        <h3>
+          Fixe ton prochain objectif
+        </h3>
+
+        <p>
+          Trail, course, voyage, projet ou défi personnel…
+        </p>
+
+        <button
+          class="primary-button"
+          id="addGoalEmptyBtn"
+          type="button"
+        >
+          Ajouter mon premier objectif
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MESSAGE BAS DE PAGE
     ====================================================== -->
 
     <section class="daily-step">
@@ -383,7 +265,7 @@
 
 
   <!-- =====================================================
-       MODALE — COMPTEUR DEPUIS
+       MODALE — DEPUIS
   ====================================================== -->
 
   <div
@@ -413,21 +295,26 @@
         ×
       </button>
 
-
       <p class="modal-kicker">
-        Nouveau départ
+        Mon chemin
       </p>
 
       <h2 id="sinceModalTitle">
-        Depuis quand avances-tu ?
+        Ajouter un départ
       </h2>
 
       <p class="modal-intro">
-        Choisis ce que tu veux suivre et la date à laquelle tout a commencé.
+        Choisis ce que tu veux suivre et la date à laquelle tu as commencé.
       </p>
 
 
       <form id="sinceForm">
+
+        <input
+          type="hidden"
+          id="sinceEditId"
+        >
+
 
         <label class="field">
 
@@ -463,11 +350,11 @@
 
 
         <!-- =================================================
-             RECOMMENCER AUJOURD'HUI
+             RECOMMENCER
         ================================================== -->
 
         <div
-          class="restart-zone"
+          class="restart-zone hidden"
           id="restartSinceZone"
         >
 
@@ -493,7 +380,7 @@
         <div class="modal-actions">
 
           <button
-            class="secondary-button danger-button"
+            class="secondary-button danger-button hidden"
             id="deleteSinceBtn"
             type="button"
           >
@@ -547,13 +434,12 @@
         ×
       </button>
 
-
       <p class="modal-kicker">
         Prochain défi
       </p>
 
       <h2 id="goalModalTitle">
-        Où veux-tu aller ?
+        Ajouter un objectif
       </h2>
 
       <p class="modal-intro">
@@ -562,6 +448,12 @@
 
 
       <form id="goalForm">
+
+        <input
+          type="hidden"
+          id="goalEditId"
+        >
+
 
         <label class="field">
 
@@ -599,7 +491,7 @@
         <div class="modal-actions">
 
           <button
-            class="secondary-button danger-button"
+            class="secondary-button danger-button hidden"
             id="deleteGoalBtn"
             type="button"
           >
