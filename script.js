@@ -105,6 +105,12 @@ const sinceInputDate =
 const deleteSinceBtn =
   document.getElementById("deleteSinceBtn");
 
+const restartSinceBtn =
+  document.getElementById("restartSinceBtn");
+
+const restartSinceZone =
+  document.getElementById("restartSinceZone");
+
 
 // MODALE OBJECTIF
 const goalModal =
@@ -714,29 +720,57 @@ function getToday() {
 }
 
 
+function getTodayString() {
+
+  const today = getToday();
+
+  const year = today.getFullYear();
+
+  const month =
+    String(today.getMonth() + 1)
+      .padStart(2, "0");
+
+  const day =
+    String(today.getDate())
+      .padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+
 function parseLocalDate(dateString) {
 
   if (!dateString) {
     return null;
   }
 
-  const parts = dateString.split("-");
+  const parts =
+    dateString.split("-");
 
   if (parts.length !== 3) {
     return null;
   }
 
-  const year = Number(parts[0]);
-  const month = Number(parts[1]) - 1;
-  const day = Number(parts[2]);
+  const year =
+    Number(parts[0]);
 
-  return new Date(year, month, day);
+  const month =
+    Number(parts[1]) - 1;
+
+  const day =
+    Number(parts[2]);
+
+  return new Date(
+    year,
+    month,
+    day
+  );
 }
 
 
 function differenceInDays(dateA, dateB) {
 
-  const msPerDay =
+  const millisecondsPerDay =
     1000 * 60 * 60 * 24;
 
   const utcA =
@@ -754,7 +788,8 @@ function differenceInDays(dateA, dateB) {
     );
 
   return Math.round(
-    (utcA - utcB) / msPerDay
+    (utcA - utcB) /
+    millisecondsPerDay
   );
 }
 
@@ -845,7 +880,8 @@ function getDailyQuoteIndex() {
     hash |= 0;
   }
 
-  return Math.abs(hash) % quotes.length;
+  return Math.abs(hash) %
+    quotes.length;
 }
 
 
@@ -864,6 +900,7 @@ function displayDailyQuote() {
   motivationQuote.textContent =
     `“${quote.text}”`;
 
+
   if (
     motivationAuthor &&
     quote.author
@@ -877,7 +914,8 @@ function displayDailyQuote() {
 
   } else if (motivationAuthor) {
 
-    motivationAuthor.textContent = "";
+    motivationAuthor.textContent =
+      "";
 
     motivationAuthor.style.display =
       "none";
@@ -894,6 +932,7 @@ function renderSince() {
 
   const data =
     loadData(STORAGE_KEYS.since);
+
 
   if (
     !data ||
@@ -924,53 +963,11 @@ function renderSince() {
   }
 
 
-  let days =
+  const days =
     differenceInDays(
       today,
       startDate
     );
-
-
-  /*
-    Si la date enregistrée est future,
-    on considère que l'activité
-    n'a pas encore commencé.
-  */
-
-  if (days < 0) {
-
-    sinceEmpty?.classList.add(
-      "hidden"
-    );
-
-    sinceContent?.classList.remove(
-      "hidden"
-    );
-
-    sinceName.textContent =
-      data.name;
-
-    const remaining =
-      Math.abs(days);
-
-    sinceDays.textContent =
-      remaining;
-
-    sinceUnit.textContent =
-      remaining === 1
-        ? "jour"
-        : "jours";
-
-    sinceMessage.textContent =
-      remaining === 1
-        ? "avant de commencer"
-        : "avant de commencer";
-
-    sinceDateDisplay.textContent =
-      `Début prévu le ${formatDate(startDate)}`;
-
-    return;
-  }
 
 
   sinceEmpty?.classList.add(
@@ -995,7 +992,18 @@ function renderSince() {
       "";
 
     sinceMessage.textContent =
-      "tout commence maintenant";
+      "un nouveau départ commence";
+
+  } else if (days === 1) {
+
+    sinceDays.textContent =
+      "1";
+
+    sinceUnit.textContent =
+      "jour";
+
+    sinceMessage.textContent =
+      "depuis que tu as commencé";
 
   } else {
 
@@ -1003,14 +1011,10 @@ function renderSince() {
       days;
 
     sinceUnit.textContent =
-      days === 1
-        ? "jour"
-        : "jours";
+      "jours";
 
     sinceMessage.textContent =
-      days === 1
-        ? "depuis que tu as commencé"
-        : "depuis que tu as commencé";
+      "depuis que tu as commencé";
   }
 
 
@@ -1028,6 +1032,7 @@ function renderGoal() {
 
   const data =
     loadData(STORAGE_KEYS.goal);
+
 
   if (
     !data ||
@@ -1073,6 +1078,7 @@ function renderGoal() {
     "hidden"
   );
 
+
   goalName.textContent =
     data.name;
 
@@ -1091,10 +1097,7 @@ function renderGoal() {
     goalMessage.textContent =
       "avant ton objectif";
 
-  }
-
-
-  else if (days === 1) {
+  } else if (days === 1) {
 
     goalPrefix.textContent =
       "";
@@ -1108,10 +1111,7 @@ function renderGoal() {
     goalMessage.textContent =
       "c’est presque le moment";
 
-  }
-
-
-  else if (days === 0) {
+  } else if (days === 0) {
 
     goalPrefix.textContent =
       "";
@@ -1125,10 +1125,7 @@ function renderGoal() {
     goalMessage.textContent =
       "C’est le jour J. Fais-le.";
 
-  }
-
-
-  else {
+  } else {
 
     const elapsed =
       Math.abs(days);
@@ -1178,6 +1175,12 @@ function openSinceModal() {
     deleteSinceBtn.style.display =
       "inline-flex";
 
+    if (restartSinceZone) {
+
+      restartSinceZone.style.display =
+        "block";
+    }
+
   } else {
 
     sinceInputName.value =
@@ -1188,6 +1191,12 @@ function openSinceModal() {
 
     deleteSinceBtn.style.display =
       "none";
+
+    if (restartSinceZone) {
+
+      restartSinceZone.style.display =
+        "none";
+    }
   }
 
 
@@ -1397,6 +1406,63 @@ goalForm?.addEventListener(
 
 
 /* =========================================================
+   RECOMMENCER AUJOURD'HUI
+========================================================= */
+
+restartSinceBtn?.addEventListener(
+  "click",
+  () => {
+
+    const currentData =
+      loadData(STORAGE_KEYS.since);
+
+
+    if (!currentData) {
+      return;
+    }
+
+
+    const confirmed =
+      window.confirm(
+        "Recommencer ce compteur à partir d’aujourd’hui ?"
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const newData = {
+
+      name:
+        currentData.name,
+
+      date:
+        getTodayString()
+
+    };
+
+
+    saveData(
+      STORAGE_KEYS.since,
+      newData
+    );
+
+
+    sinceInputDate.value =
+      newData.date;
+
+
+    closeSinceModal();
+
+    renderSince();
+  }
+);
+
+
+
+/* =========================================================
    SUPPRESSION — DEPUIS
 ========================================================= */
 
@@ -1406,8 +1472,9 @@ deleteSinceBtn?.addEventListener(
 
     const confirmed =
       window.confirm(
-        "Supprimer ce compteur ?"
+        "Supprimer complètement ce compteur ?"
       );
+
 
     if (!confirmed) {
       return;
@@ -1417,6 +1484,7 @@ deleteSinceBtn?.addEventListener(
     deleteData(
       STORAGE_KEYS.since
     );
+
 
     closeSinceModal();
 
@@ -1436,8 +1504,9 @@ deleteGoalBtn?.addEventListener(
 
     const confirmed =
       window.confirm(
-        "Supprimer cet objectif ?"
+        "Supprimer complètement cet objectif ?"
       );
+
 
     if (!confirmed) {
       return;
@@ -1447,6 +1516,7 @@ deleteGoalBtn?.addEventListener(
     deleteData(
       STORAGE_KEYS.goal
     );
+
 
     closeGoalModal();
 
@@ -1554,29 +1624,14 @@ document.addEventListener(
 
 function setDateLimits() {
 
-  const today =
-    getToday();
-
-  const yyyy =
-    today.getFullYear();
-
-  const mm =
-    String(
-      today.getMonth() + 1
-    ).padStart(2, "0");
-
-  const dd =
-    String(
-      today.getDate()
-    ).padStart(2, "0");
-
   const todayString =
-    `${yyyy}-${mm}-${dd}`;
+    getTodayString();
 
 
   /*
-    Pour le compteur "Depuis",
-    on autorise aujourd’hui ou une date passée.
+    Le compteur "Depuis"
+    accepte aujourd’hui
+    et toutes les dates passées.
   */
 
   if (sinceInputDate) {
@@ -1587,8 +1642,8 @@ function setDateLimits() {
 
 
   /*
-    Pour l'objectif,
-    on autorise aujourd’hui ou une date future.
+    L'objectif accepte aujourd’hui
+    et toutes les dates futures.
   */
 
   if (goalInputDate) {
@@ -1601,7 +1656,7 @@ function setDateLimits() {
 
 
 /* =========================================================
-   ACTUALISATION AUTOMATIQUE
+   ACTUALISATION GÉNÉRALE
 ========================================================= */
 
 function refreshAll() {
@@ -1616,17 +1671,17 @@ function refreshAll() {
 
 
 /* =========================================================
-   DÉTECTION CHANGEMENT DE JOUR
+   CHANGEMENT AUTOMATIQUE DE JOUR
 ========================================================= */
 
 let lastKnownDate =
-  getToday().toDateString();
+  getTodayString();
 
 
 setInterval(() => {
 
   const currentDate =
-    getToday().toDateString();
+    getTodayString();
 
 
   if (
@@ -1647,7 +1702,7 @@ setInterval(() => {
 
 
 /* =========================================================
-   RETOUR SUR L’APPLICATION
+   RETOUR SUR L'APPLICATION
 ========================================================= */
 
 document.addEventListener(
