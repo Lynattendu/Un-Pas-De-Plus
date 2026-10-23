@@ -52,7 +52,6 @@
     </header>
 
 
-
     <!-- =====================================================
          CITATION DU JOUR
     ====================================================== -->
@@ -62,7 +61,10 @@
       aria-labelledby="motivationTitle"
     >
 
-      <div class="motivation-label">
+      <div
+        class="motivation-label"
+        id="motivationTitle"
+      >
         ✦ Pensée du jour
       </div>
 
@@ -81,7 +83,6 @@
     </section>
 
 
-
     <!-- =====================================================
          COMPTEURS
     ====================================================== -->
@@ -91,6 +92,7 @@
       <div class="section-heading">
 
         <div>
+
           <p class="section-kicker">
             Mon chemin
           </p>
@@ -98,10 +100,10 @@
           <h2>
             Mes compteurs
           </h2>
+
         </div>
 
       </div>
-
 
 
       <!-- =================================================
@@ -116,11 +118,13 @@
         <div class="counter-top">
 
           <div class="counter-type">
+
             <span class="counter-icon">
               ↑
             </span>
 
             <div>
+
               <span class="counter-label">
                 DEPUIS
               </span>
@@ -128,7 +132,9 @@
               <p>
                 Le chemin déjà parcouru
               </p>
+
             </div>
+
           </div>
 
 
@@ -144,7 +150,7 @@
         </div>
 
 
-        <!-- État vide -->
+        <!-- ÉTAT VIDE -->
 
         <div
           class="counter-empty"
@@ -174,8 +180,7 @@
         </div>
 
 
-
-        <!-- État avec compteur -->
+        <!-- ÉTAT AVEC COMPTEUR -->
 
         <div
           class="counter-content hidden"
@@ -224,7 +229,6 @@
       </article>
 
 
-
       <!-- =================================================
            COMPTEUR 2 — À VENIR
       ================================================== -->
@@ -269,8 +273,7 @@
         </div>
 
 
-
-        <!-- État vide -->
+        <!-- ÉTAT VIDE -->
 
         <div
           class="counter-empty"
@@ -300,8 +303,7 @@
         </div>
 
 
-
-        <!-- État avec objectif -->
+        <!-- ÉTAT AVEC OBJECTIF -->
 
         <div
           class="counter-content hidden"
@@ -359,9 +361,8 @@
     </section>
 
 
-
     <!-- =====================================================
-         PETITE PHRASE DE BAS DE PAGE
+         BAS DE PAGE
     ====================================================== -->
 
     <section class="daily-step">
@@ -378,13 +379,11 @@
 
     </section>
 
-
   </main>
 
 
-
   <!-- =====================================================
-       MODALE — COMPTEUR "DEPUIS"
+       MODALE — COMPTEUR DEPUIS
   ====================================================== -->
 
   <div
@@ -413,6 +412,7 @@
       >
         ×
       </button>
+
 
       <p class="modal-kicker">
         Nouveau départ
@@ -462,6 +462,34 @@
         </label>
 
 
+        <!-- =================================================
+             RECOMMENCER AUJOURD'HUI
+        ================================================== -->
+
+        <div
+          class="restart-zone"
+          id="restartSinceZone"
+        >
+
+          <p>
+            Tu veux repartir sur un nouveau départ ?
+          </p>
+
+          <button
+            class="restart-button"
+            id="restartSinceBtn"
+            type="button"
+          >
+            ↻ Recommencer aujourd’hui
+          </button>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+        ================================================== -->
+
         <div class="modal-actions">
 
           <button
@@ -486,7 +514,6 @@
     </div>
 
   </div>
-
 
 
   <!-- =====================================================
@@ -519,6 +546,7 @@
       >
         ×
       </button>
+
 
       <p class="modal-kicker">
         Prochain défi
@@ -592,7 +620,6 @@
     </div>
 
   </div>
-
 
 
   <!-- =====================================================
