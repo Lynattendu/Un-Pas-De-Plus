@@ -1,1 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b1020"
+  >
+
+  <title>Un Pas De Plus</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+</head>
+
+<body>
+
+  <!-- =====================================================
+       APPLICATION
+  ====================================================== -->
+
+  <main class="app">
+
+
+    <!-- =====================================================
+         EN-TÊTE
+    ====================================================== -->
+
+    <header class="hero">
+
+      <p class="hero-kicker">
+        Chaque jour compte
+      </p>
+
+      <h1>
+        UN PAS DE PLUS
+      </h1>
+
+      <p class="hero-signature">
+        Pense, rêve, crois, ose…
+        <strong>et fais-le.</strong>
+      </p>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CITATION DU JOUR
+    ====================================================== -->
+
+    <section
+      class="motivation-card"
+      aria-labelledby="motivationTitle"
+    >
+
+      <div class="motivation-label">
+        ✦ Pensée du jour
+      </div>
+
+      <blockquote
+        id="motivationQuote"
+        class="motivation-quote"
+      >
+        Chaque grand voyage commence par un premier pas.
+      </blockquote>
+
+      <p
+        id="motivationAuthor"
+        class="motivation-author"
+      ></p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         COMPTEURS
+    ====================================================== -->
+
+    <section class="counters-section">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="section-kicker">
+            Mon chemin
+          </p>
+
+          <h2>
+            Mes compteurs
+          </h2>
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           COMPTEUR 1 — DEPUIS
+      ================================================== -->
+
+      <article
+        class="counter-card counter-card-since"
+        id="sinceCard"
+      >
+
+        <div class="counter-top">
+
+          <div class="counter-type">
+            <span class="counter-icon">
+              ↑
+            </span>
+
+            <div>
+              <span class="counter-label">
+                DEPUIS
+              </span>
+
+              <p>
+                Le chemin déjà parcouru
+              </p>
+            </div>
+          </div>
+
+
+          <button
+            class="edit-button"
+            id="editSinceBtn"
+            type="button"
+            aria-label="Modifier le compteur depuis"
+          >
+            ✎
+          </button>
+
+        </div>
+
+
+        <!-- État vide -->
+
+        <div
+          class="counter-empty"
+          id="sinceEmpty"
+        >
+
+          <div class="empty-symbol">
+            +
+          </div>
+
+          <h3>
+            Commence quelque chose
+          </h3>
+
+          <p>
+            Course à pied, nouveau projet, nouvelle habitude…
+          </p>
+
+          <button
+            class="primary-button"
+            id="addSinceBtn"
+            type="button"
+          >
+            Créer mon départ
+          </button>
+
+        </div>
+
+
+
+        <!-- État avec compteur -->
+
+        <div
+          class="counter-content hidden"
+          id="sinceContent"
+        >
+
+          <p
+            class="counter-name"
+            id="sinceName"
+          >
+            Course à pied
+          </p>
+
+          <div class="counter-number-wrap">
+
+            <span
+              class="counter-number"
+              id="sinceDays"
+            >
+              0
+            </span>
+
+            <span
+              class="counter-unit"
+              id="sinceUnit"
+            >
+              jours
+            </span>
+
+          </div>
+
+          <p
+            class="counter-message"
+            id="sinceMessage"
+          >
+            depuis que tu as commencé
+          </p>
+
+          <p
+            class="counter-date"
+            id="sinceDateDisplay"
+          ></p>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- =================================================
+           COMPTEUR 2 — À VENIR
+      ================================================== -->
+
+      <article
+        class="counter-card counter-card-goal"
+        id="goalCard"
+      >
+
+        <div class="counter-top">
+
+          <div class="counter-type">
+
+            <span class="counter-icon">
+              ◎
+            </span>
+
+            <div>
+
+              <span class="counter-label">
+                À VENIR
+              </span>
+
+              <p>
+                Ton prochain défi
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <button
+            class="edit-button"
+            id="editGoalBtn"
+            type="button"
+            aria-label="Modifier le prochain objectif"
+          >
+            ✎
+          </button>
+
+        </div>
+
+
+
+        <!-- État vide -->
+
+        <div
+          class="counter-empty"
+          id="goalEmpty"
+        >
+
+          <div class="empty-symbol">
+            +
+          </div>
+
+          <h3>
+            Fixe ton prochain objectif
+          </h3>
+
+          <p>
+            Trail, course, voyage, projet ou défi personnel…
+          </p>
+
+          <button
+            class="primary-button"
+            id="addGoalBtn"
+            type="button"
+          >
+            Ajouter un objectif
+          </button>
+
+        </div>
+
+
+
+        <!-- État avec objectif -->
+
+        <div
+          class="counter-content hidden"
+          id="goalContent"
+        >
+
+          <p
+            class="counter-name"
+            id="goalName"
+          >
+            Mon prochain défi
+          </p>
+
+          <p
+            class="goal-prefix"
+            id="goalPrefix"
+          >
+            Dans
+          </p>
+
+          <div class="counter-number-wrap">
+
+            <span
+              class="counter-number"
+              id="goalDays"
+            >
+              0
+            </span>
+
+            <span
+              class="counter-unit"
+              id="goalUnit"
+            >
+              jours
+            </span>
+
+          </div>
+
+          <p
+            class="counter-message"
+            id="goalMessage"
+          >
+            avant ton objectif
+          </p>
+
+          <p
+            class="counter-date"
+            id="goalDateDisplay"
+          ></p>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PETITE PHRASE DE BAS DE PAGE
+    ====================================================== -->
+
+    <section class="daily-step">
+
+      <div class="daily-step-line"></div>
+
+      <p>
+        Tu n’as pas besoin de tout accomplir aujourd’hui.
+      </p>
+
+      <strong>
+        Fais simplement un pas de plus.
+      </strong>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- =====================================================
+       MODALE — COMPTEUR "DEPUIS"
+  ====================================================== -->
+
+  <div
+    class="modal hidden"
+    id="sinceModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-overlay"
+      data-close-modal="since"
+    ></div>
+
+    <div
+      class="modal-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sinceModalTitle"
+    >
+
+      <button
+        class="modal-close"
+        type="button"
+        data-close-modal="since"
+        aria-label="Fermer"
+      >
+        ×
+      </button>
+
+      <p class="modal-kicker">
+        Nouveau départ
+      </p>
+
+      <h2 id="sinceModalTitle">
+        Depuis quand avances-tu ?
+      </h2>
+
+      <p class="modal-intro">
+        Choisis ce que tu veux suivre et la date à laquelle tout a commencé.
+      </p>
+
+
+      <form id="sinceForm">
+
+        <label class="field">
+
+          <span>
+            Nom
+          </span>
+
+          <input
+            type="text"
+            id="sinceInputName"
+            maxlength="50"
+            placeholder="Ex : Course à pied"
+            autocomplete="off"
+            required
+          >
+
+        </label>
+
+
+        <label class="field">
+
+          <span>
+            Date de début
+          </span>
+
+          <input
+            type="date"
+            id="sinceInputDate"
+            required
+          >
+
+        </label>
+
+
+        <div class="modal-actions">
+
+          <button
+            class="secondary-button danger-button"
+            id="deleteSinceBtn"
+            type="button"
+          >
+            Supprimer
+          </button>
+
+          <button
+            class="primary-button"
+            type="submit"
+          >
+            Enregistrer
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       MODALE — OBJECTIF
+  ====================================================== -->
+
+  <div
+    class="modal hidden"
+    id="goalModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-overlay"
+      data-close-modal="goal"
+    ></div>
+
+    <div
+      class="modal-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="goalModalTitle"
+    >
+
+      <button
+        class="modal-close"
+        type="button"
+        data-close-modal="goal"
+        aria-label="Fermer"
+      >
+        ×
+      </button>
+
+      <p class="modal-kicker">
+        Prochain défi
+      </p>
+
+      <h2 id="goalModalTitle">
+        Où veux-tu aller ?
+      </h2>
+
+      <p class="modal-intro">
+        Donne un nom à ton objectif et choisis la date à laquelle tu veux l’atteindre.
+      </p>
+
+
+      <form id="goalForm">
+
+        <label class="field">
+
+          <span>
+            Nom de l’objectif
+          </span>
+
+          <input
+            type="text"
+            id="goalInputName"
+            maxlength="50"
+            placeholder="Ex : Trail du Mercantour"
+            autocomplete="off"
+            required
+          >
+
+        </label>
+
+
+        <label class="field">
+
+          <span>
+            Date
+          </span>
+
+          <input
+            type="date"
+            id="goalInputDate"
+            required
+          >
+
+        </label>
+
+
+        <div class="modal-actions">
+
+          <button
+            class="secondary-button danger-button"
+            id="deleteGoalBtn"
+            type="button"
+          >
+            Supprimer
+          </button>
+
+          <button
+            class="primary-button"
+            type="submit"
+          >
+            Enregistrer
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>
